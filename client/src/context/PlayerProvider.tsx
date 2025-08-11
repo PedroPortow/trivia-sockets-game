@@ -1,6 +1,6 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
-type PlayerContextValue = {
+export type PlayerContextValue = {
   name: string
   setName: (name: string) => void
 }

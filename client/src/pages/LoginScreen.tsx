@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { usePlayer } from '@/hooks'
-import { FormEvent, useEffect, useState } from 'react'
+import websocketService from '@/services/WebSocketService'
+import type { FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function LoginScreen() {
@@ -13,7 +15,7 @@ function LoginScreen() {
     setValue(name ?? '')
   }, [name])
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
     if (!value.trim()) {
@@ -21,8 +23,14 @@ function LoginScreen() {
       return
     }
 
-    setName(value)
-    navigate('/rooms')
+    try {
+      await websocketService.connect()
+      websocketService.send(JSON.stringify({ type: 'register', name: value }))
+      setName(value)
+      navigate('/rooms')
+    } catch {
+      alert('num deu pra se conectar no websocket....')
+    }
   }
 
   return (
