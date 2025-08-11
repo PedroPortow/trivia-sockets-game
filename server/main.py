@@ -14,7 +14,7 @@ async def echo(websocket):
 async def main():
     async with serve(echo, "0.0.0.0", 8765):
         print("server rodando em ws://localhost:8765")
-        await asyncio.Future()
+        await asyncio.Future() # fica rodando 
 
 if __name__ == "__main__":
     asyncio.run(main())
