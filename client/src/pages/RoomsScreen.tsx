@@ -1,9 +1,14 @@
+import CreateRoomDialog from '@/components/CreateRoomDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePlayer } from '@/hooks'
+import websocketService from '@/services/WebSocketService'
+import { useRef } from 'react'
 
 function RoomsScreen() {
   const { name } = usePlayer()
+
+  const createRoomDialogRef = useRef(null)
 
   const rooms = [
     { id: '123', name: 'Sala 1', players_joined: 2, players_max: 7 },
@@ -14,12 +19,23 @@ function RoomsScreen() {
     console.log(roomId)
   }
 
+  const createRoom = () => {
+    websocketService.send(JSON.stringify({ type: 'create_room', name: name }))
+  }
+  
+  const showCreateRoomDialog = () => createRoomDialogRef.current?.open()
+
   return (
     <div className="min-h-dvh p-6">
       <div className="max-w-3xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Salas disponíveis</h1>
-          <span className="font-medium opacity-70">{name}</span>
+          <Button
+            onClick={showCreateRoomDialog}
+          >
+            Criar sala
+          </Button>
+          {/* <span className="font-medium opacity-70">{name}</span> */}
         </div>
         <div className="grid gap-3">
           {rooms.map((room) => (
@@ -39,6 +55,10 @@ function RoomsScreen() {
           ))}
         </div>
       </div>
+      <CreateRoomDialog 
+        ref={createRoomDialogRef}
+        onCreate={createRoom}
+      />
     </div>
   )
 }
