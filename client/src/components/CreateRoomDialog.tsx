@@ -1,6 +1,6 @@
 import { useImperativeHandle, useState } from 'react'
 import { Button } from './ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import { Input } from './ui/input'
 
 export type CreateRoomDialogRef = {
@@ -23,11 +23,7 @@ export default function CreateRoomDialog({ onCreate, ref }: CreateRoomDialogProp
   }), [])
 
   const handleCreate = () => {
-    const trimmed = roomName.trim()
-    
-    if (!trimmed) return
-
-    onCreate?.(trimmed)
+    onCreate?.(roomName)
     closeAndReset()
   }
 
@@ -41,7 +37,6 @@ export default function CreateRoomDialog({ onCreate, ref }: CreateRoomDialogProp
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Criar sala</DialogTitle>
-          <DialogDescription>Escolha um nome para a sala.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <Input

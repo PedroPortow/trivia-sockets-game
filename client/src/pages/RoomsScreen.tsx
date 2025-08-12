@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePlayer } from '@/hooks'
 import websocketService from '@/services/WebSocketService'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 function RoomsScreen() {
   const { name } = usePlayer()
@@ -21,7 +21,14 @@ function RoomsScreen() {
 
   const createRoom = () => {
     websocketService.send(JSON.stringify({ type: 'create_room', name: name }))
+    setTimeout(() => {
+      websocketService.send(JSON.stringify({ type: 'get_rooms' }))
+    }, 300)
   }
+
+  useEffect(() => {
+    websocketService.send(JSON.stringify({ type: 'get_rooms' }))
+  }, [])
   
   const showCreateRoomDialog = () => createRoomDialogRef.current?.open()
 
