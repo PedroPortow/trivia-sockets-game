@@ -1,6 +1,8 @@
+import LobbyPlayerCard from "@/components/LobbyPlayerCard"
 import { usePlayer } from "@/hooks"
 import websocketService from "@/services/WebSocketService"
-import { useEffect } from "react"
+import type { Player } from "@/types"
+import { useEffect, useState } from "react"
 
 /*
   Quando um jogador entrar em uma sala, o servidor vai precisar mandar um broadcast pra todos jogadores (da sala, ou não pra simplificar?)
@@ -9,36 +11,50 @@ import { useEffect } from "react"
   Cada ação de um jogador (exemplo: clicar no pronto pra começar) tem q ser broadcastada pra todos os jogadores pra atulizar a ui
 */
 function RoomLobbyScreen () {
-  const { currentRoom } = usePlayer()
-
-  //   if (!currentRoom) return
-
-  //   console.log("entrou no useEffect")
-
-  //   const socket = websocketService.getSocket()
-
-  //   socket?.send(JSON.stringify({ type: 'get_room_status', room_id: currentRoom.id }))
-
-  //   socket?.addEventListener('message', (event) => {
-  //     const message = JSON.parse(event.data)
-
-  //     if (message.type === 'get_room_status_success') {
-  //       console.log({message})
-  //     }
-  //   })
-  // }, [currentRoom])
-
+  // @ts-expect-error - TODO: arrumar essa bosta
+  const { player, currentRoom, setPlayer } = usePlayer()
+  // const [playerIdToReady, setPlayerIdToReady] = useState<Record<string, boolean>>({})
+  const [connectedPlayers, setConnectedPlayers] = useState<Player[]>([])
 
   useEffect(() => {
-    if (!currentRoom) return
+    const socket = websocketService.getSocket()
 
-    websocketService.send(JSON.stringify({ type: 'get_room_status', room_id: currentRoom.id }))
-  }, [currentRoom])
+    socket?.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data)
 
+      if (message.type === 'room_status_updated') {
+        const currentPlayer = message.room.players.find((p: Player) => p.id === player.id)
+        const otherPlayers = message.room.players.filter((p: Player) => p.id !== player.id)
+
+        setPlayer({ ...player, ready: currentPlayer.ready })
+        setConnectedPlayers(otherPlayers)
+      }
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentRoom, player])
+
+  const onPlayerConfirm = () => {
+    // manda mensagem informando que o player confirmou
+    websocketService.send(JSON.stringify({ 
+      type: 'player_ready', 
+      player_id: player.id,
+      room_id: currentRoom.id
+    }))
+  }
+  
   return (
     <div className="min-h-dvh p-6">
-      <h1>Sala {currentRoom?.name}</h1> 
-      
+      <div className="max-w-3xl mx-auto space-y-4">
+        <h1 className="text-2xl font-semibold">Sala {currentRoom?.name ?? 'Sem nome'}</h1>
+
+        <div className="space-y-3">
+          <LobbyPlayerCard player={player} onConfirm={onPlayerConfirm} isCurrentPlayer />
+          {connectedPlayers.map(otherPlayer => (
+            <LobbyPlayerCard key={otherPlayer.id} player={otherPlayer} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

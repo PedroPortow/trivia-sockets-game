@@ -16,8 +16,7 @@ function RoomsScreen() {
   const [rooms, setRooms] = useState<Room[] | null>(null)
 
   const joinRoom = (roomId: string) => {
-    websocketService.send(JSON.stringify({ type: 'join_room', room_id: roomId }))
-    
+    websocketService.send(JSON.stringify({ type: 'join_room', room_id: roomId, player_id: player.id }))
   }
 
   useEffect(() => {
