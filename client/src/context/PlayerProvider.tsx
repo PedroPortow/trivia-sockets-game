@@ -1,28 +1,21 @@
-import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import type { Player, Room } from '@/types'
+import { createContext, useMemo, useState, type ReactNode } from 'react'
 
 export type PlayerContextValue = {
-  name: string
-  setName: (name: string) => void
+  player: Player | null
+  setPlayer: React.Dispatch<React.SetStateAction<Player | null>>
+  currentRoom: Room | null
+  setCurrentRoom: React.Dispatch<React.SetStateAction<Room | null>>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const PlayerContext = createContext<PlayerContextValue | undefined>(undefined)
 
 export default function PlayerProvider({ children }: { children: ReactNode }) {
-  const [name, setName] = useState<string>("")
+  const [player, setPlayer] = useState<Player | null>(null)
+  const [currentRoom, setCurrentRoom] = useState<Room | null>(null)
 
-  useEffect(() => {
-    const stored = localStorage.getItem('name')
-    
-    if (stored) setName(stored)
-  }, [])
-
-  const _setName = (value: string) => {
-    setName(value)
-    localStorage.setItem('name', value)
-  }
-
-  const value = useMemo(() => ({ name, setName: _setName }), [name])
+  const value = useMemo(() => ({ player, setPlayer, currentRoom, setCurrentRoom }), [player, currentRoom])
 
   return <PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
 }

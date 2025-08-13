@@ -7,6 +7,7 @@ from websockets.server import serve
 PLAYERS = {}
 SOCKET_TO_PLAYER = {}
 ROOMS = {}
+
 async def handle_register(websocket, data):
     name = str(data.get("name", "")).strip()
     
@@ -18,8 +19,10 @@ async def handle_register(websocket, data):
 
     await websocket.send(json.dumps({
         "type": "register_success", # tem q fazer o front esperar por essa mensagme pro "login", precisa mudar lá ainda
-        "id": id,
-        "name": name,
+        "player": {
+            "id": id,
+            "name": name,
+        }
     }))
     return id
 
@@ -28,16 +31,30 @@ async def create_room(websocket, data):
     print(f"criar sala -> {name}")
 
     id = str(uuid.uuid4())
-    ROOMS[id] = { "name": name, "players": [] }
+    ROOMS[id] = { "id": id, "name": name, "players": [] }
     
     await websocket.send(json.dumps({
-        "type": "create_room_success", # esperar por essa mensagem no front e refazer request das salas
+        "type": "create_room_success",
         "room": {
             "id": id,
             "name": name,
             "players": [],
         }
     }))
+
+async def join_room(websocket, data):
+    room_id = str(data.get("room_id", "")).strip()
+    player_id = str(data.get("player_id", "")).strip()
+
+    print(f"jogador de id {player_id} entrou na sala -> {room_id}")
+    ROOMS[room_id]["players"].append(player_id)
+    await websocket.send(json.dumps({
+        "type": "join_room_success",
+        "room": {
+            "id": room_id,
+            "name": ROOMS[room_id]["name"],
+        }
+    })) 
 
 async def get_rooms(websocket):
    print("salitas ->", list(ROOMS.values()))
@@ -64,6 +81,9 @@ async def run(websocket):
 
             if message_type == "create_room":
                 await create_room(websocket, data)
+
+            if message_type == "join_room":
+                await join_room(websocket, data)
 
             if message_type == "get_rooms":
                 await get_rooms(websocket)

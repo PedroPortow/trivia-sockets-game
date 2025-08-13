@@ -32,8 +32,9 @@ class WebSocketService {
         this.cleanup()
       }
 
-      this.socket.onmessage = (ev: MessageEvent) => {
-        console.log('mensagem recebida:', ev.data)
+      this.socket.onmessage = (rawMessage: MessageEvent) => {
+        const message = JSON.parse(rawMessage.data)
+        console.log('mensagem recebida:', message)
       }
     })
 
@@ -46,9 +47,14 @@ class WebSocketService {
 
   public send(data: string) {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-      throw new Error('WebSocket is not connected')
+      throw new Error('deu ruim n ta aberta conexão viajou')
     }
+
     this.socket.send(data)
+  }
+
+  public getSocket() {
+    return this.socket
   }
 
   public close() {

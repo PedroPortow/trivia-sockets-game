@@ -3,17 +3,13 @@ import { Input } from '@/components/ui/input'
 import { usePlayer } from '@/hooks'
 import websocketService from '@/services/WebSocketService'
 import type { FormEvent } from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function LoginScreen() {
   const navigate = useNavigate()
-  const { name, setName } = usePlayer()
-  const [value, setValue] = useState(name ?? '')
-
-  useEffect(() => {
-    setValue(name ?? '')
-  }, [name])
+  const { player, setPlayer } = usePlayer()
+  const [value, setValue] = useState(player?.name ?? '')
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -26,12 +22,24 @@ function LoginScreen() {
     try {
       await websocketService.connect()
       websocketService.send(JSON.stringify({ type: 'register', name: value }))
-      setName(value)
-      navigate('/rooms')
     } catch {
       alert('num deu pra se conectar no websocket....')
+    } finally {
+      const socket = websocketService.getSocket()
+
+      socket?.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data)
+  
+        console.log("alou alou")
+        console.log({message})
+        if (message.type === 'register_success') {
+          setPlayer(message.player)
+          navigate('/rooms')
+        }
+      })
     }
   }
+
 
   return (
     <div className="min-h-dvh flex items-center justify-center p-6">

@@ -3,24 +3,48 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePlayer } from '@/hooks'
 import websocketService from '@/services/WebSocketService'
-import { useEffect, useRef } from 'react'
+import type { Room } from '@/types'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function RoomsScreen() {
-  const { name } = usePlayer()
+  // @ts-expect-error - TODO: Arrumar isso
+  const { player, setCurrentRoom } = usePlayer()
+  const navigate = useNavigate()
 
   const createRoomDialogRef = useRef(null)
-
-  const rooms = [
-    { id: '123', name: 'Sala 1', players_joined: 2, players_max: 7 },
-    { id: '456', name: 'Sala 2', players_joined: 5, players_max: 7 },
-  ]
+  const [rooms, setRooms] = useState<Room[] | null>(null)
 
   const joinRoom = (roomId: string) => {
-    console.log(roomId)
+    websocketService.send(JSON.stringify({ type: 'join_room', room_id: roomId }))
+    
   }
 
-  const createRoom = () => {
-    websocketService.send(JSON.stringify({ type: 'create_room', name: name }))
+  useEffect(() => {
+    const socket = websocketService.getSocket()
+
+    socket?.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data)
+      console.log('pimba ->:', message)
+
+      if (message.type === 'get_rooms_success') {
+        setRooms(message.rooms)
+      }
+
+      if (message.type === 'join_room_success') {
+        setCurrentRoom(message.room)
+        navigate(`/rooms/${message.room_id}`)
+      }
+    })
+
+    return () => socket?.removeEventListener('message', () => {
+      console.log('removendo listener')
+    })
+  }, [])
+
+  const createRoom = (roomName: string) => {
+    websocketService.send(JSON.stringify({ type: 'create_room', name: roomName, player_id: player.id }))
+
     setTimeout(() => {
       websocketService.send(JSON.stringify({ type: 'get_rooms' }))
     }, 300)
@@ -30,6 +54,7 @@ function RoomsScreen() {
     websocketService.send(JSON.stringify({ type: 'get_rooms' }))
   }, [])
   
+  // @ts-expect-error - TODO: Arrumar isso
   const showCreateRoomDialog = () => createRoomDialogRef.current?.open()
 
   return (
@@ -45,14 +70,14 @@ function RoomsScreen() {
           {/* <span className="font-medium opacity-70">{name}</span> */}
         </div>
         <div className="grid gap-3">
-          {rooms.map((room) => (
+          {rooms?.map((room) => (
             <Card key={room.id} className='flex-row justify-between items-center'>
               <CardHeader className='w-full'>
                 <CardTitle>{room.name}</CardTitle>
-                <CardDescription>{room.players_joined} / {room.players_max} jogadores</CardDescription>
+                <CardDescription>{room.players.length} / 4 jogadores</CardDescription>
               </CardHeader>
               <CardContent>
-                {room.players_joined < room.players_max && (
+                {room.players.length < 4 && (
                   <Button onClick={() => joinRoom(room.id)} className='cursor-pointer'>
                     Entrar
                   </Button>
@@ -60,6 +85,9 @@ function RoomsScreen() {
               </CardContent>
             </Card>
           ))}
+          {!rooms?.length && (
+            <p>num tem sala ainda</p>
+          )}
         </div>
       </div>
       <CreateRoomDialog 
