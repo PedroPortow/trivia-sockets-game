@@ -3,6 +3,8 @@ import json
 import uuid
 from websockets.server import serve
 
+# TODO: Bolar um jeito de fazer broadcast de mensagens pra todos os jogadores de uma sala
+
 # dá pra meter uma orientação a objeto bonitinha aqui né
 PLAYERS = {}
 SOCKET_TO_PLAYER = {}
