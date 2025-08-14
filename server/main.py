@@ -6,6 +6,7 @@ from room import Room
 
 PLAYERS = {} # dict de instancias de player indexada pelo id do player
 ROOMS = {} # dict de instancias de room indexada pelo id da room
+# GAME_ROOMS = {} # dict de instancias de room indexada pelo id da room
 CONNECTIONS = set()
 
 def broadcast(message, exclude=None):
@@ -114,14 +115,45 @@ async def player_ready(websocket, data):
         "room": room.to_dict()
     })
 
-    if all(player.ready for player in room.players):
-        room.start()
+    # if all(player.ready for player in room.players):
+    #     room.start_game()
 
-    if room.started: 
-        broadcast_to_room(room_id, {
-            "type": "room_status_updated",
-            "room": room.to_dict()
-        })
+    # if room.game_started: 
+    #     broadcast_to_room(room_id, {
+    #         "type": "room_status_updated",
+    #         "room": room.to_dict()
+    #     })
+
+async def start_game(websocket, data):
+    room_id = str(data.get("room_id", "")).strip()
+    room = ROOMS.get(room_id)
+
+    room.start_game()
+    
+    await websocket.send(json.dumps({
+        "type": "start_game_success",
+        "room": room.to_dict()
+    }))
+
+    # precisa disso?
+    broadcast_to_room(room_id, {
+        "type": "room_status_updated",
+        "room": room.to_dict()
+    })
+
+async def get_questions(websocket, data):
+    room_id = str(data.get("room_id", "")).strip()
+    room = ROOMS.get(room_id)
+
+    questions = room.questions
+
+
+    print(f"perguntas: {questions}")
+
+    await websocket.send(json.dumps({
+        "type": "get_questions_success",
+        "questions": questions
+    }))
 
 async def run(websocket):
     client = websocket.remote_address
@@ -148,6 +180,12 @@ async def run(websocket):
 
             if message_type == "player_ready":
                 await player_ready(websocket, data)
+
+            if message_type == "start_game":
+                await start_game(websocket, data)
+
+            # if message_type == "get_questions":
+            #     await get_questions(websocket, data)
     finally:
         CONNECTIONS.discard(websocket)
         if player_id is not None:

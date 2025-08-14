@@ -13,23 +13,27 @@ import { useNavigate } from "react-router-dom"
 */
 function RoomLobbyScreen () {
   // @ts-expect-error - TODO: arrumar essa bosta
-  const { player, currentRoom, setPlayer } = usePlayer()
-  // const [playerIdToReady, setPlayerIdToReady] = useState<Record<string, boolean>>({})
+  const { player, currentRoom, setPlayer, setCurrentRoom } = usePlayer()
   const [connectedPlayers, setConnectedPlayers] = useState<Player[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
     const socket = websocketService.getSocket()
 
+    setConnectedPlayers(currentRoom?.players.filter((p: Player) => p.id !== player.id) ?? [])
+
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
-      if (message.type === 'room_status_updated') {
-        if (message.room.started) {
-          // navigate(`/rooms/${message.room.id}/game`)
-        }
+      if (message.type === 'start_game_success') {
+        setCurrentRoom(message.room)
+        navigate(`/rooms/${message.room.id}/game`)
+      }
 
-        console.log(message.room)
+      if (message.type === 'room_status_updated') {
+        if (message.room.game_started) {
+          socket?.send(JSON.stringify({ type: 'start_game', room_id: currentRoom.id }))
+        }
 
         const currentPlayer = message.room.players.find((p: Player) => p.id === player.id)
         const otherPlayers = message.room.players.filter((p: Player) => p.id !== player.id)
@@ -43,7 +47,7 @@ function RoomLobbyScreen () {
 
     return () => socket?.removeEventListener('message', handleMessage)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player])
+  }, [player, currentRoom])
 
   const onPlayerConfirm = () => {
     // manda mensagem informando que o player confirmou

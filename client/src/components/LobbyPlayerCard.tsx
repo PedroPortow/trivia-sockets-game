@@ -18,7 +18,7 @@ const LobbyPlayerCard = ({ player, isCurrentPlayer = false, onConfirm }: LobbyPl
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {isCurrentPlayer && (
+        {isCurrentPlayer ? (
           <Button 
             onClick={onConfirm} 
             className='cursor-pointer' 
@@ -27,7 +27,11 @@ const LobbyPlayerCard = ({ player, isCurrentPlayer = false, onConfirm }: LobbyPl
           >
             {player.ready ? 'Confirmou' : 'Confirmar'}
           </Button>
-        )}
+        ) :
+        <p className="text-sm text-gray-500 text-nowrap">
+          {player.ready ? 'Confirmou' : 'Não confirmou'}
+        </p>
+        }
       </CardContent>
     </Card>
   )
