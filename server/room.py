@@ -33,10 +33,20 @@ class Room:
                 "id": 1,
                 "question": "Qual é a capital do Brasil?",
                 "answers": [
-                    { "name": "São Paulo", "correct": False },
-                    { "name": "Rio de Janeiro", "correct": False },
-                    { "name": "Brasília", "correct": True },
-                    { "name": "Belo Horizonte", "correct": False }
+                    { "name": "São Paulo", "correct": False, "id": 1 },
+                    { "name": "Rio de Janeiro", "correct": False, "id": 2 },
+                    { "name": "Brasília", "correct": True, "id": 3 },
+                    { "name": "Belo Horizonte", "correct": False, "id": 4 }
+                ]
+            },
+            {
+                "id": 2,
+                "question": "Qual é a capital do Brasil?",
+                "answers": [
+                    { "name": "São Paulo", "correct": False, "id": 1 },
+                    { "name": "Rio de Janeiro", "correct": False, "id": 2 },
+                    { "name": "Brasília", "correct": True, "id": 3 },
+                    { "name": "Belo Horizonte", "correct": False, "id": 4 }
                 ]
             }
         ]
@@ -48,4 +58,11 @@ class Room:
     
     def get_winner(self):
         return max(self.player_scores, key=self.player_scores.get)
+    
+    def answer_question(self, player_id, question_id, answer_id):
+        # essa sintaxe do python... que isso aqui senhor
+        current_question = next((q for q in self.questions if q["id"] == question_id), None)
+        current_answer = next((a for a in current_question["answers"] if a["id"] == answer_id), None)
 
+        if current_answer["correct"]:
+            self.player_scores[player_id] += 1

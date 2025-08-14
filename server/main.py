@@ -110,13 +110,14 @@ async def player_ready(websocket, data):
 
     print(f"jogador {player.name} confirmou partida")
 
+
+    if all(player.ready for player in room.players):
+        room.start_game()
+
     broadcast_to_room(room_id, {
         "type": "room_status_updated",
         "room": room.to_dict()
     })
-
-    # if all(player.ready for player in room.players):
-    #     room.start_game()
 
     # if room.game_started: 
     #     broadcast_to_room(room_id, {
@@ -155,6 +156,16 @@ async def get_questions(websocket, data):
         "questions": questions
     }))
 
+async def answer_question(websocket, data):
+    player_id = str(data.get("player_id", "")).strip()
+    room_id = str(data.get("room_id", "")).strip()
+    question_id = str(data.get("question_id", "")).strip()
+    answer_id = str(data.get("answer_id", "")).strip()
+
+    room = ROOMS.get(room_id)
+
+    room.answer_question(player_id, question_id, answer_id)
+
 async def run(websocket):
     client = websocket.remote_address
 
@@ -183,6 +194,9 @@ async def run(websocket):
 
             if message_type == "start_game":
                 await start_game(websocket, data)
+
+            if message_type == "answer_question":
+                await answer_question(websocket, data)
 
             # if message_type == "get_questions":
             #     await get_questions(websocket, data)

@@ -5,13 +5,13 @@ export interface Player {
 }
 
 export interface Question {
-  id: string,
+  id: number,
   question: string,
   answers: Answer[]
 }
 
 export interface Answer {
-  id: string,
+  id: number,
   name: string,
   correct: boolean
 }
