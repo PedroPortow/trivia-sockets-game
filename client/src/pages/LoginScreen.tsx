@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { usePlayer } from '@/hooks'
 import websocketService from '@/services/WebSocketService'
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function LoginScreen() {
@@ -20,27 +20,36 @@ function LoginScreen() {
     }
 
     try {
-      await websocketService.connect()
       websocketService.send(JSON.stringify({ type: 'register', name: value }))
     } catch {
       alert('num deu pra se conectar no websocket....')
-    } finally {
-      const socket = websocketService.getSocket()
-
-      socket?.addEventListener('message', (event) => {
-        const message = JSON.parse(event.data)
-  
-        console.log("alou alou")
-        console.log({message})
-        if (message.type === 'register_success') {
-          setPlayer(message.player)
-          navigate('/rooms')
-        }
-      })
-    }
+    } 
   }
 
+  useEffect(() => {
+    websocketService.connect()
+    const socket = websocketService.getSocket()
 
+    const handleMessage = (event: MessageEvent) => {
+      const message = JSON.parse(event.data)
+
+      console.log('LISTENER DA TELA DE LOGIN TÁ OUVINDO ESSE SAFADO')
+
+      if (message.type === 'register_success') {
+        setPlayer(message.player)
+        navigate('/rooms')
+      }
+
+      if (message.type === 'join_room_success') {
+        console.log("BOSTA ")
+      }
+    }
+
+    socket?.addEventListener('message', handleMessage)
+
+    return () => socket?.removeEventListener('message', handleMessage)
+  }, [navigate])
+  
   return (
     <div className="min-h-dvh flex items-center justify-center p-6">
       <form onSubmit={onSubmit} className="w-full max-w-md space-y-4 p-6 rounded-xl border bg-card">

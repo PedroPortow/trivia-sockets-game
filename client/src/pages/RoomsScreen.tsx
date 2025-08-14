@@ -24,15 +24,16 @@ function RoomsScreen() {
 
     socket?.addEventListener('message', (event) => {
       const message = JSON.parse(event.data)
-      console.log('pimba ->:', message)
 
       if (message.type === 'get_rooms_success') {
+        console.log("caiu aqui", message.rooms)
         setRooms(message.rooms)
       }
 
       if (message.type === 'join_room_success') {
+        console.log("caiu aqui 2", message.room)
         setCurrentRoom(message.room)
-        navigate(`/rooms/${message.room_id}`)
+        // navigate(`/rooms/${message.room_id}`)
       }
     })
 
@@ -41,16 +42,14 @@ function RoomsScreen() {
     })
   }, [])
 
+  const getRooms = () => websocketService.send(JSON.stringify({ type: 'get_rooms' }))
+
   const createRoom = (roomName: string) => {
     websocketService.send(JSON.stringify({ type: 'create_room', name: roomName, player_id: player.id }))
-
-    setTimeout(() => {
-      websocketService.send(JSON.stringify({ type: 'get_rooms' }))
-    }, 300)
   }
 
   useEffect(() => {
-    websocketService.send(JSON.stringify({ type: 'get_rooms' }))
+    getRooms()
   }, [])
   
   // @ts-expect-error - TODO: Arrumar isso

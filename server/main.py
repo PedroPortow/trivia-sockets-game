@@ -97,6 +97,7 @@ async def get_rooms(websocket):
        "rooms": [room.to_dict() for room in ROOMS.values()]
    }))
 
+
 async def player_ready(websocket, data):
     player_id = str(data.get("player_id", "")).strip()
     room_id = str(data.get("room_id", "")).strip()
@@ -113,10 +114,19 @@ async def player_ready(websocket, data):
         "room": room.to_dict()
     })
 
+    if all(player.ready for player in room.players):
+        room.start()
+
+    if room.started: 
+        broadcast_to_room(room_id, {
+            "type": "room_status_updated",
+            "room": room.to_dict()
+        })
+
+
 async def run(websocket):
     client = websocket.remote_address
 
-    print(f"novo cliente: {client} ip")
     player_id = None
     CONNECTIONS.add(websocket)
 

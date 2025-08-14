@@ -3,6 +3,7 @@ import { usePlayer } from "@/hooks"
 import websocketService from "@/services/WebSocketService"
 import type { Player } from "@/types"
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 /*
   Quando um jogador entrar em uma sala, o servidor vai precisar mandar um broadcast pra todos jogadores (da sala, ou não pra simplificar?)
@@ -15,24 +16,34 @@ function RoomLobbyScreen () {
   const { player, currentRoom, setPlayer } = usePlayer()
   // const [playerIdToReady, setPlayerIdToReady] = useState<Record<string, boolean>>({})
   const [connectedPlayers, setConnectedPlayers] = useState<Player[]>([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     const socket = websocketService.getSocket()
 
-    socket?.addEventListener('message', (event) => {
+    const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
       if (message.type === 'room_status_updated') {
+        if (message.room.started) {
+          // navigate(`/rooms/${message.room.id}/game`)
+        }
+
+        console.log(message.room)
+
         const currentPlayer = message.room.players.find((p: Player) => p.id === player.id)
         const otherPlayers = message.room.players.filter((p: Player) => p.id !== player.id)
 
         setPlayer({ ...player, ready: currentPlayer.ready })
         setConnectedPlayers(otherPlayers)
       }
-    })
+    }
 
+    socket?.addEventListener('message', handleMessage)
+
+    return () => socket?.removeEventListener('message', handleMessage)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentRoom, player])
+  }, [player])
 
   const onPlayerConfirm = () => {
     // manda mensagem informando que o player confirmou
@@ -47,7 +58,6 @@ function RoomLobbyScreen () {
     <div className="min-h-dvh p-6">
       <div className="max-w-3xl mx-auto space-y-4">
         <h1 className="text-2xl font-semibold">Sala {currentRoom?.name ?? 'Sem nome'}</h1>
-
         <div className="space-y-3">
           <LobbyPlayerCard player={player} onConfirm={onPlayerConfirm} isCurrentPlayer />
           {connectedPlayers.map(otherPlayer => (
