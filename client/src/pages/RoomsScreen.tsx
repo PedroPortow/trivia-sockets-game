@@ -31,9 +31,8 @@ function RoomsScreen() {
       }
 
       if (message.type === 'join_room_success') {
-        console.log("caiu aqui 2", message.room)
         setCurrentRoom(message.room)
-        // navigate(`/rooms/${message.room_id}`)
+        navigate(`/rooms/${message.room_id}`)
       }
     })
 

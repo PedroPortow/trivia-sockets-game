@@ -1,0 +1,265 @@
+{
+  "questions": [
+    {
+      "question": "Qual capital da França?",
+      "answers": [
+        { "name": "Paris", "correct": true },
+        { "name": "Pelotas", "correct": false },
+        { "name": "Rio de Janeiro", "correct": false },
+        { "name": "Brasília", "correct": false }
+      ]
+    },
+    {
+      "question": "Quem escreveu 'Dom Casmurro'?",
+      "answers": [
+        { "name": "Machado de Assis", "correct": true },
+        { "name": "José de Alencar", "correct": false },
+        { "name": "Graciliano Ramos", "correct": false },
+        { "name": "Clarice Lispector", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual é o nome do primeiro livro da saga Harry Potter?",
+      "answers": [
+        { "name": "Harry Potter e a Pedra Filosofal", "correct": true },
+        { "name": "Harry Potter e o Prisioneiro de Azkaban", "correct": false },
+        { "name": "Harry Potter e a Câmara Secreta", "correct": false },
+        { "name": "Harry Potter e o Cálice de Fogo", "correct": false }
+      ]
+    },
+    {
+      "question": "Em 'O Senhor dos Anéis', quem é o portador do Um Anel?",
+      "answers": [
+        { "name": "Frodo Bolseiro", "correct": true },
+        { "name": "Gandalf", "correct": false },
+        { "name": "Aragorn", "correct": false },
+        { "name": "Legolas", "correct": false }
+      ]
+    },
+    {
+      "question": "Na série 'Suits', qual é o nome do personagem interpretado por Gabriel Macht?",
+      "answers": [
+        { "name": "Harvey Specter", "correct": true },
+        { "name": "Mike Ross", "correct": false },
+        { "name": "Louis Litt", "correct": false },
+        { "name": "Jessica Pearson", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual banda lançou o álbum 'Appetite for Destruction'?",
+      "answers": [
+        { "name": "Guns N' Roses", "correct": true },
+        { "name": "Bon Jovi", "correct": false },
+        { "name": "Metallica", "correct": false },
+        { "name": "Nirvana", "correct": false }
+      ]
+    },
+    {
+      "question": "Em 'Game of Thrones', quem é conhecida como 'Mãe dos Dragões'?",
+      "answers": [
+        { "name": "Daenerys Targaryen", "correct": true },
+        { "name": "Cersei Lannister", "correct": false },
+        { "name": "Sansa Stark", "correct": false },
+        { "name": "Arya Stark", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual personagem era a vilã principal em 'Avenida Brasil'?",
+      "answers": [
+        { "name": "Carminha", "correct": true },
+        { "name": "Nina", "correct": false },
+        { "name": "Lucinda", "correct": false },
+        { "name": "Suelen", "correct": false }
+      ]
+    },
+    {
+      "question": "Quem pintou a 'Mona Lisa'?",
+      "answers": [
+        { "name": "Leonardo da Vinci", "correct": true },
+        { "name": "Michelangelo", "correct": false },
+        { "name": "Vincent van Gogh", "correct": false },
+        { "name": "Pablo Picasso", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual é o resultado de 7 × 8?",
+      "answers": [
+        { "name": "56", "correct": true },
+        { "name": "54", "correct": false },
+        { "name": "58", "correct": false },
+        { "name": "64", "correct": false }
+      ]
+    },
+    {
+      "question": "Quem foi o primeiro presidente do Brasil?",
+      "answers": [
+        { "name": "Deodoro da Fonseca", "correct": true },
+        { "name": "Getúlio Vargas", "correct": false },
+        { "name": "Floriano Peixoto", "correct": false },
+        { "name": "Marechal Rondon", "correct": false }
+      ]
+    },
+    {
+      "question": "Em qual cidade está localizado o Coliseu?",
+      "answers": [
+        { "name": "Roma", "correct": true },
+        { "name": "Atenas", "correct": false },
+        { "name": "Paris", "correct": false },
+        { "name": "Istambul", "correct": false }
+      ]
+    },
+    {
+      "question": "Na novela 'Amor à Vida', qual era o nome do vilão interpretado por Mateus Solano?",
+      "answers": [
+        { "name": "Félix", "correct": true },
+        { "name": "César", "correct": false },
+        { "name": "Bruno", "correct": false },
+        { "name": "Atila", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual é o elemento químico representado pelo símbolo 'O'?",
+      "answers": [
+        { "name": "Oxigênio", "correct": true },
+        { "name": "Ouro", "correct": false },
+        { "name": "Ósmio", "correct": false },
+        { "name": "Óxido", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual planeta é conhecido como o 'Planeta Vermelho'?",
+      "answers": [
+        { "name": "Marte", "correct": true },
+        { "name": "Vênus", "correct": false },
+        { "name": "Júpiter", "correct": false },
+        { "name": "Saturno", "correct": false }
+      ]
+    },
+    {
+      "question": "Em 'The Blacklist', qual é o apelido de Raymond Reddington?",
+      "answers": [
+        { "name": "Red", "correct": true },
+        { "name": "Black", "correct": false },
+        { "name": "Ray", "correct": false },
+        { "name": "Boss", "correct": false }
+      ]
+    },
+    {
+      "question": "Quem foi o autor da teoria da relatividade?",
+      "answers": [
+        { "name": "Albert Einstein", "correct": true },
+        { "name": "Isaac Newton", "correct": false },
+        { "name": "Galileu Galilei", "correct": false },
+        { "name": "Nikola Tesla", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual é o maior oceano do mundo?",
+      "answers": [
+        { "name": "Oceano Pacífico", "correct": true },
+        { "name": "Oceano Atlântico", "correct": false },
+        { "name": "Oceano Índico", "correct": false },
+        { "name": "Oceano Ártico", "correct": false }
+      ]
+    },
+    {
+      "question": "Quem canta a música 'Thriller'?",
+      "answers": [
+        { "name": "Michael Jackson", "correct": true },
+        { "name": "Prince", "correct": false },
+        { "name": "Elvis Presley", "correct": false },
+        { "name": "Madonna", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual é a fórmula da área de um círculo?",
+      "answers": [
+        { "name": "π × r²", "correct": true },
+        { "name": "2 × π × r", "correct": false },
+        { "name": "r × r", "correct": false },
+        { "name": "π × d", "correct": false }
+      ]
+    },
+    {
+      "question": "Na mitologia grega, quem é o deus dos mares?",
+      "answers": [
+        { "name": "Poseidon", "correct": true },
+        { "name": "Zeus", "correct": false },
+        { "name": "Hades", "correct": false },
+        { "name": "Hermes", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual é a capital do Japão?",
+      "answers": [
+        { "name": "Tóquio", "correct": true },
+        { "name": "Osaka", "correct": false },
+        { "name": "Quioto", "correct": false },
+        { "name": "Hiroshima", "correct": false }
+      ]
+    },
+    {
+      "question": "Em qual ano ocorreu a Proclamação da República no Brasil?",
+      "answers": [
+        { "name": "1889", "correct": true },
+        { "name": "1822", "correct": false },
+        { "name": "1930", "correct": false },
+        { "name": "1910", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual personagem da série 'Friends' é conhecido por sua frase 'We were on a break!'?",
+      "answers": [
+        { "name": "Ross Geller", "correct": true },
+        { "name": "Chandler Bing", "correct": false },
+        { "name": "Joey Tribbiani", "correct": false },
+        { "name": "Monica Geller", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual país é conhecido como 'Terra do Sol Nascente'?",
+      "answers": [
+        { "name": "Japão", "correct": true },
+        { "name": "China", "correct": false },
+        { "name": "Coreia do Sul", "correct": false },
+        { "name": "Tailândia", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual a nota musical que corresponde à frequência de aproximadamente 440 Hz?",
+      "answers": [
+        { "name": "Lá (A)", "correct": true },
+        { "name": "Dó (C)", "correct": false },
+        { "name": "Mi (E)", "correct": false },
+        { "name": "Sol (G)", "correct": false }
+      ]
+    },
+    {
+      "question": "Quem é o autor do livro '1984'?",
+      "answers": [
+        { "name": "George Orwell", "correct": true },
+        { "name": "Aldous Huxley", "correct": false },
+        { "name": "Ray Bradbury", "correct": false },
+        { "name": "Jules Verne", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual desses elementos é um gás nobre?",
+      "answers": [
+        { "name": "Neônio", "correct": true },
+        { "name": "Nitrogênio", "correct": false },
+        { "name": "Oxigênio", "correct": false },
+        { "name": "Hidrogênio", "correct": false }
+      ]
+    },
+    {
+      "question": "Qual o nome do processo pelo qual as plantas produzem seu alimento?",
+      "answers": [
+        { "name": "Fotossíntese", "correct": true },
+        { "name": "Respiração", "correct": false },
+        { "name": "Fermentação", "correct": false },
+        { "name": "Digestão", "correct": false }
+      ]
+    }
+  ]
+}

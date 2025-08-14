@@ -123,7 +123,6 @@ async def player_ready(websocket, data):
             "room": room.to_dict()
         })
 
-
 async def run(websocket):
     client = websocket.remote_address
 
