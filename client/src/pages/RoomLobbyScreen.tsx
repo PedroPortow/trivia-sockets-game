@@ -14,13 +14,11 @@ import { useNavigate } from "react-router-dom"
 function RoomLobbyScreen () {
   // @ts-expect-error - TODO: arrumar essa bosta
   const { player, currentRoom, setPlayer, setCurrentRoom } = usePlayer()
-  const [connectedPlayers, setConnectedPlayers] = useState<Player[]>([])
+  const [connectedPlayers, setConnectedPlayers] = useState<Player[]>(currentRoom?.players.filter((p: Player) => p.id !== player.id) ?? [])
   const navigate = useNavigate()
 
   useEffect(() => {
     const socket = websocketService.getSocket()
-
-    setConnectedPlayers(currentRoom?.players.filter((p: Player) => p.id !== player.id) ?? [])
 
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
@@ -35,8 +33,12 @@ function RoomLobbyScreen () {
           socket?.send(JSON.stringify({ type: 'start_game', room_id: currentRoom.id }))
         }
 
+        console.log(message)
+
         const currentPlayer = message.room.players.find((p: Player) => p.id === player.id)
         const otherPlayers = message.room.players.filter((p: Player) => p.id !== player.id)
+
+        console.log({otherPlayers})
 
         setPlayer({ ...player, ready: currentPlayer.ready })
         setConnectedPlayers(otherPlayers)
@@ -57,6 +59,8 @@ function RoomLobbyScreen () {
       room_id: currentRoom.id
     }))
   }
+
+  console.log({connectedPlayers})
   
   return (
     <div className="min-h-dvh p-6">

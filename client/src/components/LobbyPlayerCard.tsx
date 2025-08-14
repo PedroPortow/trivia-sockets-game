@@ -14,7 +14,7 @@ const LobbyPlayerCard = ({ player, isCurrentPlayer = false, onConfirm }: LobbyPl
     <Card key={player.id} className="flex-row justify-between items-center">
       <CardHeader className="w-full">
         <CardTitle className="flex items-center justify-between">
-          {player.name}
+          {player.name} {isCurrentPlayer ? '(você)' : ''}
         </CardTitle>
       </CardHeader>
       <CardContent>

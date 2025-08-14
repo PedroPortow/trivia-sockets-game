@@ -80,11 +80,11 @@ async def join_room(websocket, data):
         "room": room.to_dict()
     })) 
 
-    # quem tá no lobby precisa atualizar a UI porque mais um player entrou na sala
-    broadcast({
-        "type": "get_rooms_success",
-        "rooms": [room.to_dict() for room in ROOMS.values()]
-    })
+    # # quem tá no lobby precisa atualizar a UI porque mais um player entrou na sala
+    # broadcast({
+    #     "type": "get_rooms_success",
+    #     "rooms": [room.to_dict() for room in ROOMS.values()]
+    # })
 
     # pro pessoal da sala, também precisa atualizar a UI com o novo player que entrou
     broadcast_to_room(room_id, {

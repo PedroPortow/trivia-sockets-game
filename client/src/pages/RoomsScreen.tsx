@@ -22,24 +22,24 @@ function RoomsScreen() {
   useEffect(() => {
     const socket = websocketService.getSocket()
 
-    socket?.addEventListener('message', (event) => {
+    function handleMessage(event: MessageEvent) {
       const message = JSON.parse(event.data)
 
-      if (message.type === 'get_rooms_success') {
-        console.log("caiu aqui", message.rooms)
-        setRooms(message.rooms)
+        if (message.type === 'get_rooms_success') {
+          setRooms(message.rooms)
+        }
+  
+        if (message.type === 'join_room_success') {
+          setCurrentRoom(message.room)
+          navigate(`/rooms/${message.room.id}`)
       }
+    }
 
-      if (message.type === 'join_room_success') {
-        setCurrentRoom(message.room)
-        navigate(`/rooms/${message.room_id}`)
-      }
-    })
+    socket?.addEventListener('message', handleMessage)
 
-    return () => socket?.removeEventListener('message', () => {
-      console.log('removendo listener')
-    })
-  }, [])
+    return () => socket?.removeEventListener('message', handleMessage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate])
 
   const getRooms = () => websocketService.send(JSON.stringify({ type: 'get_rooms' }))
 
@@ -74,10 +74,13 @@ function RoomsScreen() {
                 <CardDescription>{room.players.length} / 4 jogadores</CardDescription>
               </CardHeader>
               <CardContent>
-                {room.players.length < 4 && (
+                {room.players.length < 4 && !room.game_started && (
                   <Button onClick={() => joinRoom(room.id)} className='cursor-pointer'>
                     Entrar
                   </Button>
+                )}
+                {room.game_started && (
+                  <p className='text-sm text-muted-foreground text-nowrap'>Jogo em andamento</p>
                 )}
               </CardContent>
             </Card>
