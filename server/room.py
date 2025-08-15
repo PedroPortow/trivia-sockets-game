@@ -52,22 +52,12 @@ class Room:
 
     def answer_question(self, player_id, question_id, answer_id):
         current_question = next((q for q in self.questions if str(q["id"]) == str(question_id)), None)
-
-        if current_question is None:
-            print(f"Pergunta com ID {question_id} não encontrada")
-            return False
-
-
         current_answer = next((a for a in current_question["answers"] if str(a["id"]) == str(answer_id)), None)
-
-        if current_answer is None:
-            print(f"Resposta com ID {answer_id} não encontrada")
-            return False
 
         if current_answer["correct"]:
             self.player_scores[player_id] += 1
-            print(f"Resposta corretaa! -- {player_id}: {self.player_scores[player_id]}")
+            print(f"Resposta corretaa! -- {player_id}: Pontuação: {self.player_scores[player_id]}")
             return True
         else:
-            print(f"Resposta incorreta -- {player_id}: {self.player_scores[player_id]}")
+            print(f"Resposta incorreta -- {player_id}: Pontuação: {self.player_scores[player_id]}")
             return False

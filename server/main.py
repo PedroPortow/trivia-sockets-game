@@ -25,7 +25,6 @@ def broadcast_to_room(room_id, message):
 
     target_sockets = [player.websocket for player in room.players]
 
-    print(f"broadcast para sala {room_id} -> {message}")
     ws_broadcast(target_sockets, json.dumps(message))
 
 async def handle_register(websocket, data):
@@ -79,12 +78,6 @@ async def join_room(websocket, data):
         "type": "JOIN_ROOM_SUCCESS",
         "room": room.to_dict()
     }))
-
-    # # quem tá no lobby precisa atualizar a UI porque mais um player entrou na sala
-    # broadcast({
-    #     "type": "GET_ROOMS_SUCCESS",
-    #     "rooms": [room.to_dict() for room in ROOMS.values()]
-    # })
 
     # pro pessoal da sala, também precisa atualizar a UI com o novo player que entrou
     broadcast_to_room(room_id, {
