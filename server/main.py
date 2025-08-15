@@ -56,6 +56,19 @@ async def create_room(websocket, data):
         "rooms": [room.to_dict() for room in ROOMS.values()]
     })
 
+async def game_finished(websocket, data):
+    room_id = str(data.get("room_id", "")).strip()
+    
+    try:
+        ROOMS.pop(room_id)
+    except KeyError: # se já tiver popado, só ignora o erro
+        pass
+
+    broadcast({
+        "type": "get_rooms_success",
+        "rooms": [room.to_dict() for room in ROOMS.values()]
+    })
+
 async def join_room(websocket, data):
     room_id = str(data.get("room_id", "")).strip()
     player_id = str(data.get("player_id", "")).strip()
@@ -154,6 +167,17 @@ async def answer_question(websocket, data):
 
     room.answer_question(player_id, question_id, answer_id)
 
+async def get_results(websocket, data):
+    room_id = str(data.get("room_id", "")).strip()
+    room = ROOMS.get(room_id)
+
+    player_scores = room.get_player_scores()
+
+    await websocket.send(json.dumps({
+        "type": "get_results_success",
+        "results": player_scores
+    }))
+
 async def run(websocket):
     client = websocket.remote_address
 
@@ -186,8 +210,11 @@ async def run(websocket):
             if message_type == "answer_question":
                 await answer_question(websocket, data)
 
-            # if message_type == "get_questions":
-            #     await get_questions(websocket, data)
+            if message_type == "get_results":
+                await get_results(websocket, data)
+
+            if message_type == "game_finished":
+                await game_finished(websocket, data)
     finally:
         CONNECTIONS.discard(websocket)
         if player_id is not None:

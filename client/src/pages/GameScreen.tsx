@@ -4,6 +4,7 @@ import { usePlayer } from "@/hooks"
 import websocketService from "@/services/WebSocketService"
 import type { Question } from "@/types"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -13,7 +14,7 @@ function GameScreen() {
   const [currentQuestion, setCurrentQuestion] = useState<Question>(currentRoom.questions[0])
   const [currentAnswerId, setCurrentAnswerId] = useState<number | null>(null)
   const timerRef = useRef<TimerRef>(null)
-  
+  const navigate = useNavigate()
   useEffect(() => {
     const socket = websocketService.getSocket()
     
@@ -43,6 +44,8 @@ function GameScreen() {
 
     if (currentQuestionIndex === currentRoom.questions.length - 1) {
       // TODO: redirecionar pra tela de resultado do jogo, acbou as perguntas :)
+      navigate(`/rooms/${currentRoom.id}/game/result`)
+    
       console.log('acabou as perguntas')
       return
     }

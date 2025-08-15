@@ -5,12 +5,6 @@ import type { Player } from "@/types"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-/*
-  Quando um jogador entrar em uma sala, o servidor vai precisar mandar um broadcast pra todos jogadores (da sala, ou não pra simplificar?)
-  Atualizando o status da sala (basicamente o numero de jogadores e se estão pronto pra começar.)
-
-  Cada ação de um jogador (exemplo: clicar no pronto pra começar) tem q ser broadcastada pra todos os jogadores pra atulizar a ui
-*/
 function RoomLobbyScreen () {
   // @ts-expect-error - TODO: arrumar essa bosta
   const { player, currentRoom, setPlayer, setCurrentRoom } = usePlayer()
