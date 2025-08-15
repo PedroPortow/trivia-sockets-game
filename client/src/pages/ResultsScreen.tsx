@@ -32,7 +32,6 @@ function ResultsScreen() {
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
-      console.log({message})
       if (message.type === 'GET_RESULTS_SUCCESS') {
         setResults(message.results)
       }

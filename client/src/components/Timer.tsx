@@ -13,7 +13,7 @@ const Timer = forwardRef<TimerRef, TimerProps>(({ duration, onFinish }, ref) => 
   const [timeLeft, setTimeLeft] = useState(duration)
 
   useImperativeHandle(ref, () => ({
-    reset: () => { setTimeLeft(duration); console.log('resetou')}
+    reset: () => { setTimeLeft(duration) }
   }))
 
   useEffect(() => {

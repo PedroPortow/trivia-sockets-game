@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 function RoomLobbyScreen () {
-  // @ts-expect-error - TODO: arrumar essa bosta
   const { player, currentRoom, setPlayer, setCurrentRoom } = usePlayer()
   const [connectedPlayers, setConnectedPlayers] = useState<Player[]>(currentRoom?.players.filter((p: Player) => p.id !== player.id) ?? [])
   const navigate = useNavigate()
@@ -18,7 +17,7 @@ function RoomLobbyScreen () {
       const message = JSON.parse(event.data)
 
       if (message.type === 'START_GAME_SUCCESS') {
-        // aqui já traz as perguntas...
+        // aqui já traz as perguntas, então atualiza o estado da sala pra já ter as perguntas na tela qnd entrar na sala
         setCurrentRoom(message.room)
         navigate(`/rooms/${message.room.id}/game`)
       }
@@ -28,12 +27,8 @@ function RoomLobbyScreen () {
           socket?.send(JSON.stringify({ type: 'START_GAME', room_id: currentRoom.id }))
         }
 
-        console.log(message)
-
         const currentPlayer = message.room.players.find((p: Player) => p.id === player.id)
         const otherPlayers = message.room.players.filter((p: Player) => p.id !== player.id)
-
-        console.log({otherPlayers})
 
         setPlayer({ ...player, ready: currentPlayer.ready })
         setConnectedPlayers(otherPlayers)
@@ -55,8 +50,6 @@ function RoomLobbyScreen () {
     }))
   }
 
-  console.log({connectedPlayers})
-  
   return (
     <div className="min-h-dvh p-6">
       <div className="max-w-3xl mx-auto space-y-4">

@@ -29,7 +29,6 @@ function GameScreen() {
   
   const onTimerFinish = () => {
     // manda a resposta pro servidort, ele q decide se ta certa ou nem
-    console.log({currentQuestion})
     if (currentAnswerId) {
       websocketService.send(JSON.stringify({ 
         type: 'ANSWER_QUESTION', 
@@ -43,10 +42,7 @@ function GameScreen() {
     const currentQuestionIndex = currentRoom.questions.findIndex(q => q.id === currentQuestion.id)
 
     if (currentQuestionIndex === currentRoom.questions.length - 1) {
-      // TODO: redirecionar pra tela de resultado do jogo, acbou as perguntas :)
       navigate(`/rooms/${currentRoom.id}/game/result`)
-    
-      console.log('acabou as perguntas')
       return
     }
       
@@ -55,7 +51,6 @@ function GameScreen() {
     setCurrentAnswerId(null)
   }
 
-  console.log({currentRoom})
   const currentQuestionIndex = useMemo(() => {
     return currentRoom.questions.findIndex(q => q.id === currentQuestion.id)
   }, [currentRoom.questions, currentQuestion])

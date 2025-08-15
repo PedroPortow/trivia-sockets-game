@@ -25,11 +25,11 @@ const LobbyPlayerCard = ({ player, isCurrentPlayer = false, onConfirm }: LobbyPl
             disabled={player.ready}
             variant={player.ready ? 'default' : 'outline'}
           >
-            {player.ready ? 'Confirmou' : 'Confirmar'}
+            {player.ready ? 'Confirmou ✅' : 'Confirmar'}
           </Button>
         ) :
         <p className="text-sm text-gray-500 text-nowrap">
-          {player.ready ? 'Confirmou' : 'Não confirmou'}
+          {player.ready ? 'Confirmou ✅' : 'Não confirmou ❌'}
         </p>
         }
       </CardContent>
