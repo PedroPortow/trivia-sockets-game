@@ -24,6 +24,7 @@ function RoomLobbyScreen () {
       const message = JSON.parse(event.data)
 
       if (message.type === 'start_game_success') {
+        // aqui já traz as perguntas...
         setCurrentRoom(message.room)
         navigate(`/rooms/${message.room.id}/game`)
       }

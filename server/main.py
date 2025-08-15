@@ -11,7 +11,7 @@ CONNECTIONS = set()
 
 def broadcast(message, exclude=None):
     data = json.dumps(message)
-    
+
     if exclude is None:
         targets = CONNECTIONS
     else:
@@ -23,16 +23,16 @@ def broadcast_to_room(room_id, message):
     room = ROOMS.get(room_id)
     if not room or not room.players:
         return
-    
+
     target_sockets = [player.websocket for player in room.players]
-    
+
     print(f"broadcast para sala {room_id} -> {message}")
     ws_broadcast(target_sockets, json.dumps(message))
 
 async def handle_register(websocket, data):
     name = str(data.get("name", "")).strip()
     player = Player(name=name, websocket=websocket)
-    
+
     PLAYERS[player.id] = player
 
     await websocket.send(json.dumps({
@@ -50,7 +50,7 @@ async def create_room(websocket, data):
         "type": "create_room_success",
         "room": room.to_dict()
     }))
-    
+
     broadcast({
         "type": "get_rooms_success",
         "rooms": [room.to_dict() for room in ROOMS.values()]
@@ -58,7 +58,7 @@ async def create_room(websocket, data):
 
 async def join_room(websocket, data):
     room_id = str(data.get("room_id", "")).strip()
-    player_id = str(data.get("player_id", "")).strip() 
+    player_id = str(data.get("player_id", "")).strip()
 
     room = ROOMS.get(room_id)
     player = PLAYERS.get(player_id)
@@ -78,7 +78,7 @@ async def join_room(websocket, data):
     await websocket.send(json.dumps({
         "type": "join_room_success",
         "room": room.to_dict()
-    })) 
+    }))
 
     # # quem tá no lobby precisa atualizar a UI porque mais um player entrou na sala
     # broadcast({
@@ -112,33 +112,21 @@ async def player_ready(websocket, data):
 
 
     if all(player.ready for player in room.players):
-        room.start_game()
+      room.set_game_started()
 
     broadcast_to_room(room_id, {
         "type": "room_status_updated",
         "room": room.to_dict()
     })
 
-    # if room.game_started: 
-    #     broadcast_to_room(room_id, {
-    #         "type": "room_status_updated",
-    #         "room": room.to_dict()
-    #     })
-
 async def start_game(websocket, data):
     room_id = str(data.get("room_id", "")).strip()
     room = ROOMS.get(room_id)
 
     room.start_game()
-    
-    await websocket.send(json.dumps({
-        "type": "start_game_success",
-        "room": room.to_dict()
-    }))
 
-    # precisa disso?
     broadcast_to_room(room_id, {
-        "type": "room_status_updated",
+        "type": "start_game_success",
         "room": room.to_dict()
     })
 

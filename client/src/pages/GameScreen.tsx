@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { usePlayer } from "@/hooks"
 import websocketService from "@/services/WebSocketService"
 import type { Question } from "@/types"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 
 
@@ -17,31 +17,18 @@ function GameScreen() {
   useEffect(() => {
     const socket = websocketService.getSocket()
     
-    websocketService.send(JSON.stringify({ type: 'get_questions', room_id: currentRoom.id }))
-    
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
-
-
-
-      // if (message.type === 'room_status_updated') {
-      //   console.log(message.room)
-      // }
     }
-
+    
     socket?.addEventListener('message', handleMessage)
 
     return () => socket?.removeEventListener('message', handleMessage)
-  }, [])
-
-  // const handleAnswer = (answerId: number) => {
-
-  // }
+  }, [currentRoom])
   
   const onTimerFinish = () => {
-    console.log('timer finisheeeeeed')
-
     // manda a resposta pro servidort, ele q decide se ta certa ou nem
+    console.log({currentQuestion})
     if (currentAnswerId) {
       websocketService.send(JSON.stringify({ 
         type: 'answer_question', 
@@ -56,7 +43,7 @@ function GameScreen() {
 
     if (currentQuestionIndex === currentRoom.questions.length - 1) {
       // TODO: redirecionar pra tela de resultado do jogo, acbou as perguntas :)
-    
+      console.log('acabou as perguntas')
       return
     }
       
@@ -65,9 +52,15 @@ function GameScreen() {
     setCurrentAnswerId(null)
   }
 
+  console.log({currentRoom})
+  const currentQuestionIndex = useMemo(() => {
+    return currentRoom.questions.findIndex(q => q.id === currentQuestion.id)
+  }, [currentRoom.questions, currentQuestion])
+
 
   return (
     <div className="min-h-dvh pt-16 items-center justify-center flex flex-col gap-16">
+      <p>Pergunta {currentQuestionIndex + 1} de {currentRoom.questions.length}</p>
       <Timer duration={15} onFinish={onTimerFinish} ref={timerRef} />
       <div className="flex flex-col gap-4">
         <h1 className="text-2xl font-semibold">{currentQuestion?.question}</h1>
