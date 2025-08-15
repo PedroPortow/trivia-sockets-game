@@ -6,7 +6,6 @@ from room import Room
 
 PLAYERS = {} # dict de instancias de player indexada pelo id do player
 ROOMS = {} # dict de instancias de room indexada pelo id da room
-# GAME_ROOMS = {} # dict de instancias de room indexada pelo id da room
 CONNECTIONS = set()
 
 def broadcast(message, exclude=None):
@@ -36,7 +35,7 @@ async def handle_register(websocket, data):
     PLAYERS[player.id] = player
 
     await websocket.send(json.dumps({
-        "type": "register_success",
+        "type": "REGISTER_SUCCESS",
         "player": player.to_dict()
     }))
 
@@ -46,13 +45,8 @@ async def create_room(websocket, data):
 
     ROOMS[room.id] = room
 
-    await websocket.send(json.dumps({
-        "type": "create_room_success",
-        "room": room.to_dict()
-    }))
-
     broadcast({
-        "type": "get_rooms_success",
+        "type": "GET_ROOMS_SUCCESS",
         "rooms": [room.to_dict() for room in ROOMS.values()]
     })
 
@@ -65,7 +59,7 @@ async def game_finished(websocket, data):
         pass
 
     broadcast({
-        "type": "get_rooms_success",
+        "type": "GET_ROOMS_SUCCESS",
         "rooms": [room.to_dict() for room in ROOMS.values()]
     })
 
@@ -76,38 +70,31 @@ async def join_room(websocket, data):
     room = ROOMS.get(room_id)
     player = PLAYERS.get(player_id)
 
-    if room.max_players <= len(room.players):
-        await websocket.send(json.dumps({
-            "type": "join_room_error",
-            "error": "Sala cheia!"
-        }))
-        return
-
     print(f"jogador {player.name} entrou na sala -> {room.name}")
 
     room.add_player(player)
 
     # manda confirmação pro jogador
     await websocket.send(json.dumps({
-        "type": "join_room_success",
+        "type": "JOIN_ROOM_SUCCESS",
         "room": room.to_dict()
     }))
 
     # # quem tá no lobby precisa atualizar a UI porque mais um player entrou na sala
     # broadcast({
-    #     "type": "get_rooms_success",
+    #     "type": "GET_ROOMS_SUCCESS",
     #     "rooms": [room.to_dict() for room in ROOMS.values()]
     # })
 
     # pro pessoal da sala, também precisa atualizar a UI com o novo player que entrou
     broadcast_to_room(room_id, {
-        "type": "room_status_updated",
+        "type": "ROOM_STATUS_UPDATED",
         "room": room.to_dict()
     })
 
 async def get_rooms(websocket):
    await websocket.send(json.dumps({
-       "type": "get_rooms_success",
+       "type": "GET_ROOMS_SUCCESS",
        "rooms": [room.to_dict() for room in ROOMS.values()]
    }))
 
@@ -128,7 +115,7 @@ async def player_ready(websocket, data):
       room.set_game_started()
 
     broadcast_to_room(room_id, {
-        "type": "room_status_updated",
+        "type": "ROOM_STATUS_UPDATED",
         "room": room.to_dict()
     })
 
@@ -139,23 +126,9 @@ async def start_game(websocket, data):
     room.start_game()
 
     broadcast_to_room(room_id, {
-        "type": "start_game_success",
+        "type": "START_GAME_SUCCESS",
         "room": room.to_dict()
     })
-
-async def get_questions(websocket, data):
-    room_id = str(data.get("room_id", "")).strip()
-    room = ROOMS.get(room_id)
-
-    questions = room.questions
-
-
-    print(f"perguntas: {questions}")
-
-    await websocket.send(json.dumps({
-        "type": "get_questions_success",
-        "questions": questions
-    }))
 
 async def answer_question(websocket, data):
     player_id = str(data.get("player_id", "")).strip()
@@ -174,7 +147,7 @@ async def get_results(websocket, data):
     player_scores = room.get_player_scores()
 
     await websocket.send(json.dumps({
-        "type": "get_results_success",
+        "type": "GET_RESULTS_SUCCESS",
         "results": player_scores
     }))
 
@@ -189,31 +162,31 @@ async def run(websocket):
             data = json.loads(raw_message)
             message_type = data.get("type")
 
-            if message_type == "register":
+            if message_type == "REGISTER":
                 await handle_register(websocket, data)
 
-            if message_type == "create_room":
+            if message_type == "CREATE_ROOM":
                 await create_room(websocket, data)
 
-            if message_type == "join_room":
+            if message_type == "JOIN_ROOM":
                 await join_room(websocket, data)
 
-            if message_type == "get_rooms":
+            if message_type == "GET_ROOMS":
                 await get_rooms(websocket)
 
-            if message_type == "player_ready":
+            if message_type == "PLAYER_READY":
                 await player_ready(websocket, data)
 
-            if message_type == "start_game":
+            if message_type == "START_GAME":
                 await start_game(websocket, data)
 
-            if message_type == "answer_question":
+            if message_type == "ANSWER_QUESTION":
                 await answer_question(websocket, data)
 
-            if message_type == "get_results":
+            if message_type == "GET_RESULTS":
                 await get_results(websocket, data)
 
-            if message_type == "game_finished":
+            if message_type == "GAME_FINISHED":
                 await game_finished(websocket, data)
     finally:
         CONNECTIONS.discard(websocket)

@@ -20,7 +20,7 @@ function LoginScreen() {
     }
 
     try {
-      websocketService.send(JSON.stringify({ type: 'register', name: value }))
+      websocketService.send(JSON.stringify({ type: 'REGISTER', name: value }))
     } catch {
       alert('num deu pra se conectar no websocket....')
     } 
@@ -33,25 +33,23 @@ function LoginScreen() {
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
-      console.log('LISTENER DA TELA DE LOGIN TÁ OUVINDO ESSE SAFADO')
-
-      if (message.type === 'register_success') {
+      if (message.type === 'REGISTER_SUCCESS') {
         setPlayer(message.player)
         navigate('/rooms')
-      }
-
-      if (message.type === 'join_room_success') {
-        console.log("BOSTA ")
       }
     }
 
     socket?.addEventListener('message', handleMessage)
 
     return () => socket?.removeEventListener('message', handleMessage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
   
   return (
-    <div className="min-h-dvh flex items-center justify-center p-6">
+    <div className="min-h-dvh flex flex-col items-center justify-center p-6 gap-16">
+      <h1 className="text-2xl font-semibold">
+        Bem vindo ao Questionados 😎
+      </h1>
       <form onSubmit={onSubmit} className="w-full max-w-md space-y-4 p-6 rounded-xl border bg-card">
         <h1 className="text-2xl font-semibold">Digite seu nome</h1>
         <Input

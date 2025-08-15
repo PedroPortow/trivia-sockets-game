@@ -1,4 +1,4 @@
-import CreateRoomDialog from '@/components/CreateRoomDialog'
+import CreateRoomDialog, { type CreateRoomDialogRef } from '@/components/CreateRoomDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePlayer } from '@/hooks'
@@ -8,15 +8,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function RoomsScreen() {
-  // @ts-expect-error - TODO: Arrumar isso
   const { player, setCurrentRoom } = usePlayer()
   const navigate = useNavigate()
 
-  const createRoomDialogRef = useRef(null)
+  const createRoomDialogRef = useRef<CreateRoomDialogRef>(null)
   const [rooms, setRooms] = useState<Room[] | null>(null)
 
   const joinRoom = (roomId: string) => {
-    websocketService.send(JSON.stringify({ type: 'join_room', room_id: roomId, player_id: player.id }))
+    websocketService.send(JSON.stringify({ type: 'JOIN_ROOM', room_id: roomId, player_id: player?.id }))
   }
 
   useEffect(() => {
@@ -25,11 +24,11 @@ function RoomsScreen() {
     function handleMessage(event: MessageEvent) {
       const message = JSON.parse(event.data)
 
-        if (message.type === 'get_rooms_success') {
+        if (message.type === 'GET_ROOMS_SUCCESS') {
           setRooms(message.rooms)
         }
   
-        if (message.type === 'join_room_success') {
+        if (message.type === 'JOIN_ROOM_SUCCESS') {
           setCurrentRoom(message.room)
           navigate(`/rooms/${message.room.id}`)
       }
@@ -41,24 +40,23 @@ function RoomsScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate])
 
-  const getRooms = () => websocketService.send(JSON.stringify({ type: 'get_rooms' }))
+  const getRooms = () => websocketService.send(JSON.stringify({ type: 'GET_ROOMS' }))
 
   const createRoom = (roomName: string) => {
-    websocketService.send(JSON.stringify({ type: 'create_room', name: roomName, player_id: player.id }))
+    websocketService.send(JSON.stringify({ type: 'CREATE_ROOM', name: roomName, player_id: player?.id }))
   }
 
   useEffect(() => {
     getRooms()
   }, [])
   
-  // @ts-expect-error - TODO: Arrumar isso
   const showCreateRoomDialog = () => createRoomDialogRef.current?.open()
 
   return (
     <div className="min-h-dvh p-6">
       <div className="max-w-3xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Salas disponíveis</h1>
+          <h1 className="text-2xl font-semibold">Salas</h1>
           <Button
             onClick={showCreateRoomDialog}
           >
@@ -71,9 +69,11 @@ function RoomsScreen() {
             <Card key={room.id} className='flex-row justify-between items-center'>
               <CardHeader className='w-full'>
                 <CardTitle>{room.name}</CardTitle>
+                {/* @ts-expect-error - Typescript para de reclamar porfavor, eu n quero arrumar isso */}
                 <CardDescription>{room.players.length} / 4 jogadores</CardDescription>
               </CardHeader>
               <CardContent>
+                {/* @ts-expect-error - Typescript para de reclamar porfavor, eu n quero arrumar isso */}
                 {room.players.length < 4 && !room.game_started && (
                   <Button onClick={() => joinRoom(room.id)} className='cursor-pointer'>
                     Entrar
@@ -86,7 +86,11 @@ function RoomsScreen() {
             </Card>
           ))}
           {!rooms?.length && (
-            <p>num tem sala ainda</p>
+            <p className='text-center text-muted-foreground mt-16'>
+              Ainda não há salas disponíveis 😢
+              <br />
+              Crie uma!
+            </p>
           )}
         </div>
       </div>

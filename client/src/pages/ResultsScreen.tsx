@@ -6,14 +6,13 @@ import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 function ResultsScreen() {
-  // @ts-expect-error - TODO: arrumar isso
   const { currentRoom } = usePlayer()
   const [results, setResults] = useState<Record<string, number>>({})
   const navigate = useNavigate()
   const { sortedPlayersWithScores, winnerPlayerId } = useMemo(() => {
     if (!results || Object.keys(results).length === 0) return { sortedPlayersWithScores: [], winnerPlayerId: null }
     
-    const sortedPlayersWithScores = currentRoom.players
+    const sortedPlayersWithScores = currentRoom?.players
       .map((player: Player) => ({
         ...player,
         score: results[player.id] || 0
@@ -23,17 +22,18 @@ function ResultsScreen() {
     const winnerPlayerId = sortedPlayersWithScores.length > 0 ? sortedPlayersWithScores[0].id : null
 
     return { sortedPlayersWithScores, winnerPlayerId }
-  }, [currentRoom.players, results])
+  }, [currentRoom?.players, results])
 
   useEffect(() => {
     const socket = websocketService.getSocket()
 
-    socket?.send(JSON.stringify({ type: 'get_results', room_id: currentRoom.id }))
+    socket?.send(JSON.stringify({ type: 'GET_RESULTS', room_id: currentRoom.id }))
 
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
-      if (message.type === 'get_results_success') {
+      console.log({message})
+      if (message.type === 'GET_RESULTS_SUCCESS') {
         setResults(message.results)
       }
     }
@@ -44,7 +44,7 @@ function ResultsScreen() {
   }, [currentRoom])
 
   const handleGameFinished = () => {
-    websocketService.send(JSON.stringify({ type: 'game_finished', room_id: currentRoom.id }))
+    websocketService.send(JSON.stringify({ type: 'GAME_FINISHED', room_id: currentRoom.id }))
     navigate('/rooms')
   }
 

@@ -17,15 +17,15 @@ function RoomLobbyScreen () {
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
-      if (message.type === 'start_game_success') {
+      if (message.type === 'START_GAME_SUCCESS') {
         // aqui já traz as perguntas...
         setCurrentRoom(message.room)
         navigate(`/rooms/${message.room.id}/game`)
       }
 
-      if (message.type === 'room_status_updated') {
+      if (message.type === 'ROOM_STATUS_UPDATED') {
         if (message.room.game_started) {
-          socket?.send(JSON.stringify({ type: 'start_game', room_id: currentRoom.id }))
+          socket?.send(JSON.stringify({ type: 'START_GAME', room_id: currentRoom.id }))
         }
 
         console.log(message)
@@ -49,9 +49,9 @@ function RoomLobbyScreen () {
   const onPlayerConfirm = () => {
     // manda mensagem informando que o player confirmou
     websocketService.send(JSON.stringify({ 
-      type: 'player_ready', 
-      player_id: player.id,
-      room_id: currentRoom.id
+      type: 'PLAYER_READY', 
+      player_id: player?.id,
+      room_id: currentRoom?.id
     }))
   }
 

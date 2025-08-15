@@ -32,7 +32,7 @@ function GameScreen() {
     console.log({currentQuestion})
     if (currentAnswerId) {
       websocketService.send(JSON.stringify({ 
-        type: 'answer_question', 
+        type: 'ANSWER_QUESTION', 
         room_id: currentRoom.id, 
         question_id: currentQuestion?.id, 
         answer_id: currentAnswerId,
