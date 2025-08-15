@@ -10,9 +10,6 @@ class WebSocketService {
   }
 
   public connect(customUrl?: string): Promise<void> {
-    // if (this.isOpen && this.socket) return Promise.resolve()
-    // if (this.connectPromise) return this.connectPromise
-
     const target = customUrl || this.url
 
     this.connectPromise = new Promise((resolve, reject) => {
@@ -33,7 +30,6 @@ class WebSocketService {
       }
 
       this.socket.onmessage = (rawMessage: MessageEvent) => {
-        const message = JSON.parse(rawMessage.data)
       }
     })
 

@@ -36,7 +36,7 @@ class Room:
             return data["questions"]
 
     def start_game(self):
-        self.questions = random.sample(self._load_questions_from_json("data.json"), 1)
+        self.questions = random.sample(self._load_questions_from_json("data.json"), 5)
 
     def get_player_score(self, player_id):
         return self.player_scores.get(player_id, 0)

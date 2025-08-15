@@ -57,11 +57,13 @@ function RoomsScreen() {
       <div className="max-w-3xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Salas</h1>
-          <Button
-            onClick={showCreateRoomDialog}
-          >
-            Criar sala
-          </Button>
+          {!rooms?.length && (
+              <Button
+              onClick={showCreateRoomDialog}
+            >
+              Criar sala
+            </Button>
+          )}
           {/* <span className="font-medium opacity-70">{name}</span> */}
         </div>
         <div className="grid gap-3">

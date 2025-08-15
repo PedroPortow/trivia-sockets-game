@@ -3,29 +3,18 @@ import { Button } from "@/components/ui/button"
 import { usePlayer } from "@/hooks"
 import websocketService from "@/services/WebSocketService"
 import type { Question } from "@/types"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 
 
 function GameScreen() {
-  // @ts-expect-error - TODO: arrumar isso
   const { currentRoom, player } = usePlayer()
   const [currentQuestion, setCurrentQuestion] = useState<Question>(currentRoom.questions[0])
   const [currentAnswerId, setCurrentAnswerId] = useState<number | null>(null)
+
   const timerRef = useRef<TimerRef>(null)
   const navigate = useNavigate()
-  useEffect(() => {
-    const socket = websocketService.getSocket()
-    
-    const handleMessage = (event: MessageEvent) => {
-      const message = JSON.parse(event.data)
-    }
-    
-    socket?.addEventListener('message', handleMessage)
-
-    return () => socket?.removeEventListener('message', handleMessage)
-  }, [currentRoom])
   
   const onTimerFinish = () => {
     // manda a resposta pro servidort, ele q decide se ta certa ou nem
@@ -54,7 +43,6 @@ function GameScreen() {
   const currentQuestionIndex = useMemo(() => {
     return currentRoom.questions.findIndex(q => q.id === currentQuestion.id)
   }, [currentRoom.questions, currentQuestion])
-
 
   return (
     <div className="min-h-dvh pt-16 items-center justify-center flex flex-col gap-16">

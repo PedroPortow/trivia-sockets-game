@@ -51,7 +51,11 @@ async def create_room(websocket, data):
 
 async def game_finished(websocket, data):
     room_id = str(data.get("room_id", "")).strip()
-    
+    room = ROOMS.get(room_id)
+
+    for player in room.players:
+        player.ready = False
+
     try:
         ROOMS.pop(room_id)
     except KeyError: # se já tiver popado, só ignora o erro
@@ -139,10 +143,15 @@ async def get_results(websocket, data):
 
     player_scores = room.get_player_scores()
 
-    await websocket.send(json.dumps({
+    broadcast_to_room(room_id, {
         "type": "GET_RESULTS_SUCCESS",
         "results": player_scores
-    }))
+    })
+
+    # await websocket.send(json.dumps({
+    #     "type": "GET_RESULTS_SUCCESS",
+    #     "results": player_scores
+    # }))
 
 async def run(websocket):
     client = websocket.remote_address
