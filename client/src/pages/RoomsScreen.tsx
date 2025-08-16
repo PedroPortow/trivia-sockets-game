@@ -24,6 +24,8 @@ function RoomsScreen() {
     function handleMessage(event: MessageEvent) {
       const message = JSON.parse(event.data)
 
+      console.log(JSON.stringify(message, null, 2))
+
         if (message.type === 'GET_ROOMS_SUCCESS') {
           setRooms(message.rooms)
         }

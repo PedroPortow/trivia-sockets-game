@@ -80,7 +80,3 @@ ip addr show
 # ou
 ifconfig
 ```
-
-## 📝 Licença
-
-Este projeto foi desenvolvido para fins acadêmicos.

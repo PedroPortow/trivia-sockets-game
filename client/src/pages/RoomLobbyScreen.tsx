@@ -16,6 +16,8 @@ function RoomLobbyScreen () {
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
 
+      console.log(JSON.stringify(message, null, 2))
+
       if (message.type === 'START_GAME_SUCCESS') {
         // aqui já traz as perguntas, então atualiza o estado da sala pra já ter as perguntas na tela qnd entrar na sala
         setCurrentRoom(message.room)
@@ -24,6 +26,7 @@ function RoomLobbyScreen () {
 
       if (message.type === 'ROOM_STATUS_UPDATED') {
         if (message.room.game_started) {
+
           socket?.send(JSON.stringify({ type: 'START_GAME', room_id: currentRoom.id }))
         }
 

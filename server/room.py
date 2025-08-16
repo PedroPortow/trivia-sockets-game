@@ -3,7 +3,6 @@ import json
 import random
 
 class Room:
-
     def __init__(self, name, game_started=False, id=None):
         self.id = id if id is not None else str(uuid.uuid4())
         self.name = name
@@ -11,7 +10,7 @@ class Room:
         self.max_players = 4
         self.game_started = game_started
         self.player_scores = {player.id: 0 for player in self.players}
-        self.questions = []
+        self.questions = random.sample(self._load_questions_from_json("data.json"), 5)
 
     def to_dict(self):
         return {
@@ -27,19 +26,10 @@ class Room:
         self.players.append(player)
         self.player_scores[player.id] = 0
 
-    def questions_to_dict(self):
-        return self.questions
-
     def _load_questions_from_json(self, file_path):
        with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             return data["questions"]
-
-    def start_game(self):
-        self.questions = random.sample(self._load_questions_from_json("data.json"), 5)
-
-    def get_player_score(self, player_id):
-        return self.player_scores.get(player_id, 0)
 
     def get_winner(self):
         return max(self.player_scores, key=self.player_scores.get)

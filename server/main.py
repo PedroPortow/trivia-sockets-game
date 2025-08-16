@@ -1,12 +1,17 @@
 import asyncio
 import json
+import logging
 from websockets.legacy.server import serve, broadcast as ws_broadcast # tá uma bagunça mas ta funcionando
+from websockets.exceptions import ConnectionClosed
 from player import Player
 from room import Room
 
 PLAYERS = {} # dict de instancias de player indexada pelo id do player
 ROOMS = {} # dict de instancias de room indexada pelo id da room
 CONNECTIONS = set()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def broadcast(message, exclude=None):
     data = json.dumps(message)
@@ -89,7 +94,7 @@ async def join_room(websocket, data):
         "room": room.to_dict()
     })
 
-async def get_rooms(websocket):
+async def get_rooms(websocket, data):
    await websocket.send(json.dumps({
        "type": "GET_ROOMS_SUCCESS",
        "rooms": [room.to_dict() for room in ROOMS.values()]
@@ -120,7 +125,7 @@ async def start_game(websocket, data):
     room_id = str(data.get("room_id", "")).strip()
     room = ROOMS.get(room_id)
 
-    room.start_game()
+    # room.start_game()
 
     broadcast_to_room(room_id, {
         "type": "START_GAME_SUCCESS",
@@ -159,46 +164,39 @@ async def run(websocket):
     player_id = None
     CONNECTIONS.add(websocket)
 
-    try:
-        async for raw_message in websocket:
+    print("novo cliente -> ", client)
+    async for raw_message in websocket:
+        try: 
+
             data = json.loads(raw_message)
             message_type = data.get("type")
 
+            handlers = {
+                "REGISTER": handle_register,
+                "CREATE_ROOM": create_room,
+                "JOIN_ROOM": join_room,
+                "GET_ROOMS": get_rooms,
+                "PLAYER_READY": player_ready,
+                "START_GAME": start_game,
+                "ANSWER_QUESTION": answer_question,
+                "GET_RESULTS": get_results,
+                "GAME_FINISHED": game_finished,
+            }
+
+            message_handler = handlers.get(message_type)
+
             if message_type == "REGISTER":
-                await handle_register(websocket, data)
-
-            if message_type == "CREATE_ROOM":
-                await create_room(websocket, data)
-
-            if message_type == "JOIN_ROOM":
-                await join_room(websocket, data)
-
-            if message_type == "GET_ROOMS":
-                await get_rooms(websocket)
-
-            if message_type == "PLAYER_READY":
-                await player_ready(websocket, data)
-
-            if message_type == "START_GAME":
-                await start_game(websocket, data)
-
-            if message_type == "ANSWER_QUESTION":
-                await answer_question(websocket, data)
-
-            if message_type == "GET_RESULTS":
-                await get_results(websocket, data)
-
-            if message_type == "GAME_FINISHED":
-                await game_finished(websocket, data)
-    finally:
-        CONNECTIONS.discard(websocket)
-        if player_id is not None:
+                player_id = await handle_register(websocket, data)
+            else:
+                await message_handler(websocket, data)
+        except Exception as e:
+            print(f"erro, cliente vazou -> {e}")
+            CONNECTIONS.discard(websocket)
             PLAYERS.pop(player_id, None)
-            print(f"cliente desconectado: {client}")
 
 async def main():
     async with serve(run, "0.0.0.0", 8765):
-        print("server rodando em ws://localhost:8765")
+        logger.info("server rodando em ws://localhost:8765")
         await asyncio.Future()  # fica rodando
 
 if __name__ == "__main__":
