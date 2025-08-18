@@ -28,9 +28,6 @@ class WebSocketService {
       this.socket.onclose = () => {
         this.cleanup()
       }
-
-      this.socket.onmessage = (rawMessage: MessageEvent) => {
-      }
     })
 
     return this.connectPromise

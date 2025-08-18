@@ -7,7 +7,9 @@ import { useNavigate } from "react-router-dom"
 
 function RoomLobbyScreen () {
   const { player, currentRoom, setPlayer, setCurrentRoom } = usePlayer()
-  const [connectedPlayers, setConnectedPlayers] = useState<Player[]>(currentRoom?.players.filter((p: Player) => p.id !== player.id) ?? [])
+  const [connectedPlayers, setConnectedPlayers] = useState<Player[]>(
+    currentRoom?.players?.filter((p: Player) => p.id !== player?.id) ?? []
+  )
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -27,13 +29,15 @@ function RoomLobbyScreen () {
       if (message.type === 'ROOM_STATUS_UPDATED') {
         if (message.room.game_started) {
 
-          socket?.send(JSON.stringify({ type: 'START_GAME', room_id: currentRoom.id }))
+          socket?.send(JSON.stringify({ type: 'START_GAME', room_id: currentRoom?.id }))
         }
 
-        const currentPlayer = message.room.players.find((p: Player) => p.id === player.id)
-        const otherPlayers = message.room.players.filter((p: Player) => p.id !== player.id)
+        const currentPlayer = message.room.players.find((p: Player) => p.id === player?.id)
+        const otherPlayers = message.room.players.filter((p: Player) => p.id !== player?.id)
 
-        setPlayer({ ...player, ready: currentPlayer.ready })
+        if (player && currentPlayer) {
+          setPlayer({ ...player, ready: currentPlayer.ready })
+        }
         setConnectedPlayers(otherPlayers)
       }
     }
@@ -58,7 +62,9 @@ function RoomLobbyScreen () {
       <div className="max-w-3xl mx-auto space-y-4">
         <h1 className="text-2xl font-semibold">Sala {currentRoom?.name ?? 'Sem nome'}</h1>
         <div className="space-y-3">
-          <LobbyPlayerCard player={player} onConfirm={onPlayerConfirm} isCurrentPlayer />
+          {player && (
+            <LobbyPlayerCard player={player} onConfirm={onPlayerConfirm} isCurrentPlayer />
+          )}
           {connectedPlayers.map(otherPlayer => (
             <LobbyPlayerCard key={otherPlayer.id} player={otherPlayer} />
           ))}

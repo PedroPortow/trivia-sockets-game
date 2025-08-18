@@ -12,7 +12,7 @@ function ResultsScreen() {
   const { sortedPlayersWithScores, winnerPlayerId } = useMemo(() => {
     if (!results || Object.keys(results).length === 0) return { sortedPlayersWithScores: [], winnerPlayerId: null }
     
-    const sortedPlayersWithScores = currentRoom?.players
+    const sortedPlayersWithScores = (currentRoom?.players || [])
       .map((player: Player) => ({
         ...player,
         score: results[player.id] || 0
@@ -27,7 +27,7 @@ function ResultsScreen() {
   useEffect(() => {
     const socket = websocketService.getSocket()
 
-    socket?.send(JSON.stringify({ type: 'GET_RESULTS', room_id: currentRoom.id }))
+    socket?.send(JSON.stringify({ type: 'GET_RESULTS', room_id: currentRoom?.id }))
 
     const handleMessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data)
@@ -43,7 +43,7 @@ function ResultsScreen() {
   }, [currentRoom])
 
   const handleGameFinished = () => {
-    websocketService.send(JSON.stringify({ type: 'GAME_FINISHED', room_id: currentRoom.id }))
+    websocketService.send(JSON.stringify({ type: 'GAME_FINISHED', room_id: currentRoom?.id }))
     navigate('/rooms')
   }
 
