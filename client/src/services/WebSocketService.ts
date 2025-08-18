@@ -3,7 +3,7 @@ class WebSocketService {
   private isOpen = false
   private url: string
   private connectPromise: Promise<void> | null = null
-  private DEFAULT_URL = 'ws://localhost:8765'
+  private DEFAULT_URL = 'ws://10.15.114.114:8765' 
 
   constructor(url?: string) {
     this.url = url || this.DEFAULT_URL
